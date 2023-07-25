@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import { buildCssStringForFont } from '../../fonts/utils';
 import { isDefined } from '../../utils/assertions';
+
 import { TextMeasurerInterface } from './types';
 
 export class CanvasTextMeasurer implements TextMeasurerInterface {
@@ -52,17 +54,13 @@ export class CanvasTextMeasurer implements TextMeasurerInterface {
 
   // This method must be called last, to return the calculated width of the text.
   calculateWidth() {
-    let fontString = '';
+    const fontString = buildCssStringForFont(
+      this.font,
+      this.bold,
+      this.italic,
+      this.size,
+    );
 
-    if (this.bold) {
-      fontString += 'bold ';
-    }
-
-    if (this.italic) {
-      fontString += 'italic ';
-    }
-
-    fontString += `${this.size}px ${this.font}`;
     const key = `${fontString}<>!&%${this.text}`;
 
     // If the cache does not contain the key (fontString + text), then calculate the width and add it to the cache.
