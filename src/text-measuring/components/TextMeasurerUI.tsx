@@ -1,26 +1,30 @@
-import { useState } from 'react';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
+import LoadingButton from '@mui/lab/LoadingButton';
+import StraightenIcon from '@mui/icons-material/Straighten';
 
-export interface TextMeasurerProps {
-  initialText: string;
+export interface TextMeasurerUIProps {
+  text: string;
+  isLoading: boolean;
+  measurementResult: number | null;
+  onMeasureClicked: (text: string) => void;
+  onTextChanged: (text: string) => void;
 }
 
-export const TextMeasurer: React.FC<TextMeasurerProps> = ({ initialText }) => {
-  const [text, setText] = useState<string>(initialText);
-  const [measurementResult, setMeasurementResult] = useState<number | null>(
-    null,
-  );
+export const TextMeasurerUI: React.FC<TextMeasurerUIProps> = ({
+  text,
+  measurementResult,
+  onMeasureClicked,
+  onTextChanged,
+  isLoading,
+}) => {
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setText(event.target.value);
+    onTextChanged(event.target.value);
   };
 
   const measureText = (text: string) => {
-    // Implement your text measurement logic here
-    // For example, we can measure the length of the text
-    setMeasurementResult(text.length);
+    onMeasureClicked(text);
   };
 
   return (
@@ -45,9 +49,15 @@ export const TextMeasurer: React.FC<TextMeasurerProps> = ({ initialText }) => {
           />
         </Grid>
         <Grid display="flex" justifyContent="center" alignItems="center">
-          <Button variant="contained" onClick={() => measureText(text)}>
-            Measure
-          </Button>
+          <LoadingButton
+            variant="contained"
+            onClick={() => measureText(text)}
+            loading={isLoading}
+            loadingPosition={'start'}
+            startIcon={<StraightenIcon />}
+          >
+            {isLoading ? 'Measuring...' : 'Measure'}
+          </LoadingButton>
         </Grid>
       </Grid>
     </Card>

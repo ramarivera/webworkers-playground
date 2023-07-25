@@ -6,6 +6,10 @@ const meta = {
   component: TextMeasurer,
   argTypes: {
     initialText: { control: 'text' },
+    measurerType: {
+      control: 'select',
+      options: ['canvas', 'offscreen-canvas', 'html'],
+    },
   },
   parameters: {
     layout: 'centered',
@@ -18,11 +22,14 @@ type Story = StoryObj<typeof meta>;
 export const Empty: Story = {
   args: {
     initialText: '',
+    measurerType: 'canvas',
   },
 };
 
 export const HelloWorld: Story = {
+  ...Empty,
   args: {
+    ...Empty.args,
     initialText: 'Hello World',
   },
 };
