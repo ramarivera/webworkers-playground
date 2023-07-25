@@ -1,8 +1,8 @@
-import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
+import StraightenIcon from '@mui/icons-material/Straighten';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
-import LoadingButton from '@mui/lab/LoadingButton';
-import StraightenIcon from '@mui/icons-material/Straighten';
+import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 
 export interface TextMeasurerUIProps {
   text: string;
