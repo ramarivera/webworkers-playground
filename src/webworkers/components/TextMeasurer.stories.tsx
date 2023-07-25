@@ -1,11 +1,14 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { TextMeasurer, TextMeasurerProps } from './TextMeasurer';
+import { TextMeasurer } from './TextMeasurer';
 
 const meta = {
   title: 'Example/TextMeasurer',
   component: TextMeasurer,
   argTypes: {
-    text: { control: 'text' },
+    initialText: { control: 'text' },
+  },
+  parameters: {
+    layout: 'centered',
   },
 } satisfies Meta<typeof TextMeasurer>;
 
@@ -14,12 +17,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Empty: Story = {
   args: {
-    text: '',
+    initialText: '',
   },
 };
 
 export const HelloWorld: Story = {
   args: {
-    text: 'Hello World',
+    initialText: 'Hello World',
   },
 };
