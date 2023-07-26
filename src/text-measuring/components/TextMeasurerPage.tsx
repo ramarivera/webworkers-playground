@@ -162,7 +162,6 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
 
   const handleFontChanged = useCallback(
     (font: RegisteredFontData) => {
-      console.log('handleFontChanged', font);
       setCurrentFontId(font.id);
     },
     [setCurrentFontId],
