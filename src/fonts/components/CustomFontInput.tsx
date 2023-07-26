@@ -10,42 +10,60 @@ import FontDownloadIcon from '@mui/icons-material/FontDownload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Card from '@mui/material/Card';
 import FormGroup from '@mui/material/FormGroup';
+import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import {
+  FormProvider,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useForm,
+} from 'react-hook-form';
 import { TypeOf, coerce, object, string } from 'zod';
 
-import { wrapValidatableSchema } from '../../utils/forms';
+import { useShowNotifications } from '../../core/notifications/hooks';
+import { wrapValidatableSchema } from '../../core/utils/forms';
 
 const customFontInputSchema = object({
   url: string().url('A valid font URL is required'),
+  name: string().nonempty('A name is required'),
   isBold: coerce.boolean(),
   isItalic: coerce.boolean(),
 });
 
-type CustomFontInputData = TypeOf<typeof customFontInputSchema>;
+export type CustomFontInputData = TypeOf<typeof customFontInputSchema>;
 
 const { TextField, CheckboxField } = wrapValidatableSchema(
   customFontInputSchema,
 );
 
 export interface CustomFontInputProps {
-  onFontRegistered: (url: string, isBold: boolean, isItalic: boolean) => void;
+  initialValues?: CustomFontInputData;
   isLoading: boolean;
+  onFontRegistered: (
+    name: string,
+    url: string,
+    isBold: boolean,
+    isItalic: boolean,
+  ) => void;
 }
 
 export const CustomFontInput: React.FC<CustomFontInputProps> = ({
-  onFontRegistered,
   isLoading,
+  initialValues,
+  onFontRegistered,
 }) => {
-  const methods = useForm<CustomFontInputData>({
+  const { warning } = useShowNotifications();
+
+  const formMethods = useForm<CustomFontInputData>({
     resolver: zodResolver(customFontInputSchema),
+    values: initialValues,
   });
 
   const {
     reset,
     handleSubmit,
     formState: { isSubmitSuccessful },
-  } = methods;
+  } = formMethods;
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -54,27 +72,40 @@ export const CustomFontInput: React.FC<CustomFontInputProps> = ({
   }, [isSubmitSuccessful, reset]);
 
   const handleRegisterFont: SubmitHandler<CustomFontInputData> = (values) => {
-    console.log('handleRegisterFont', values);
-    onFontRegistered(values.url, values.isBold, values.isItalic);
+    onFontRegistered(values.name, values.url, values.isBold, values.isItalic);
+  };
+
+  const handleValidationError: SubmitErrorHandler<CustomFontInputData> = (
+    errors,
+  ) => {
+    const firstErrorKey = Object.keys(errors)[0];
+    warning(`Error validating ${firstErrorKey} field`);
   };
 
   return (
-    <FormProvider {...methods}>
+    <FormProvider {...formMethods}>
       <Card
         variant="outlined"
         component={'form'}
-        onSubmit={handleSubmit(handleRegisterFont)}
+        onSubmit={handleSubmit(handleRegisterFont, handleValidationError)}
         noValidate
       >
         <FormGroup>
           <Grid container spacing={2} direction={'column'} padding={1}>
+            <Grid>
+              <Typography textAlign={'center'} variant="h5">
+                Custom font
+              </Typography>
+            </Grid>
+            <Grid>
+              <TextField required label="Name" variant="outlined" name="name" />
+            </Grid>
             <Grid>
               <TextField
                 required
                 label="Font URL"
                 variant="outlined"
                 name="url"
-                defaultValue={'https://www.google.com'}
               />
             </Grid>
             <Grid container spacing={0} direction={'row'}>
