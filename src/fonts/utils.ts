@@ -1,3 +1,5 @@
+import { hashString } from '../core/utils/strings';
+
 import { DEFAULT_FONT_SIZE } from './constants';
 import { PredefinedFont, FontRegistrationData } from './types';
 
@@ -71,6 +73,8 @@ export function generateIdForFontRegistrationData(
   const { font, displayName, isBold, isItalic, url } = fontRegistrationData;
   const weight = isBold ? 'bold' : 'normal';
   const style = isItalic ? 'italic' : 'normal';
+  // We hash the display name to be compatible with storybook Controls and URL params
+  const hashedDisplayName = hashString(displayName);
 
-  return `${font}-(${displayName})-${weight}-${style}-${url}`;
+  return `${font}-${weight}-${style}-${url.length}-${hashedDisplayName}`;
 }
