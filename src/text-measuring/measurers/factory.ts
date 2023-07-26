@@ -8,8 +8,12 @@ export function getTextMeasurer(type: TextMeasurerType): TextMeasurerInterface {
       const context = canvas.getContext('2d')!;
       return new CanvasTextMeasurer().withCanvasContext(context);
     }
-    // case 'offscreen-canvas':
-    //   return new OffscreenCanvasTextMeasurer();
+    case 'offscreen-canvas': {
+      const canvas = new OffscreenCanvas(100, 100);
+      const context = canvas.getContext('2d')!;
+      // @ts-expect-error OffscreenCanvas is not supported by TS yet
+      return new CanvasTextMeasurer().withCanvasContext(context);
+    }
     // case 'html':
     //   return new HtmlTextMeasurer();
   }

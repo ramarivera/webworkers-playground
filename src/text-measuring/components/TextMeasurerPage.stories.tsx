@@ -1,3 +1,4 @@
+/* eslint-disable storybook/context-in-play-function */
 import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
 import { userEvent, waitFor, within } from '@storybook/testing-library';
@@ -73,7 +74,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Empty: Story = {
+const Empty: Story = {
   args: {
     initialText: '',
     measurerType: 'canvas',
@@ -89,7 +90,7 @@ export const HelloWorld: Story = {
   },
 };
 
-export const NormalFlowAutoplay: Story = {
+const NormalFlowAutoplay: Story = {
   ...Empty,
   args: {
     ...Empty.args,
@@ -144,6 +145,30 @@ export const NormalFlowAutoplay: Story = {
         '85.2578125',
       );
     });
+  },
+};
+
+export const NormalFlowDocumentCanvas: Story = {
+  ...Empty,
+  args: {
+    ...Empty.args,
+    initialText: 'Hello Document!',
+    measurerType: 'canvas',
+  },
+  async play(context) {
+    return await NormalFlowAutoplay.play?.(context);
+  },
+};
+
+export const NormalFlowOffscreenCanvas: Story = {
+  ...Empty,
+  args: {
+    ...Empty.args,
+    initialText: 'Hello Offscreen!',
+    measurerType: 'offscreen-canvas',
+  },
+  async play(context) {
+    return await NormalFlowAutoplay.play?.(context);
   },
 };
 
