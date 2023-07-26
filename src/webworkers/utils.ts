@@ -42,6 +42,24 @@ export function isMessageOfType<TMessage extends AllMessages>(
   return (event.data as MessagePayloads[TMessage]).message === message;
 }
 
+export function logObjectKeys(
+  obj: Record<string, unknown>,
+  logFn: (key: string, value: unknown) => void,
+  excludeKeysRegex: RegExp = /canvas/,
+): void {
+  for (const [key, value] of Object.entries(obj)) {
+    if (excludeKeysRegex.test(key)) {
+      continue;
+    }
+
+    logFn(key, value);
+
+    if (typeof value === 'object' && value !== null) {
+      logObjectKeys(value as Record<string, unknown>, logFn);
+    }
+  }
+}
+
 export function isCanvasDetached(canvas: OffscreenCanvas): boolean {
   try {
     canvas.transferControlToOffscreen();

@@ -5,26 +5,33 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 
 import { RegisteredFontData } from '../types';
 
 const TEST_IDS = {
-  FONT_LIST: 'font-list-select',
-  FONT_LIST_LABEL: 'font-list-label',
+  FONT_LIST: 'font-input-list',
+  FONT_LIST_LABEL: 'font-input-list-label',
+  FONT_SIZE_INPUT: 'font-input-size',
+  FONT_SIZE_INPUT_LABEL: 'font-input-size-label',
 };
 
-interface FontListProps {
+interface FontInputProps {
   fonts: RegisteredFontData[];
   selectedFont?: RegisteredFontData;
+  fontSize: number;
+  onFontSizeChanged?: (fontSize: number) => void;
   onFontSelected?: (font: RegisteredFontData) => void;
 }
 
-export const FontList: React.FC<FontListProps> = ({
+export const FontInput: React.FC<FontInputProps> = ({
   fonts,
   selectedFont,
   onFontSelected,
+  fontSize,
+  onFontSizeChanged,
 }) => {
   const currentFontsById = useMemo(() => {
     return fonts.reduce(
@@ -52,6 +59,12 @@ export const FontList: React.FC<FontListProps> = ({
     },
     [currentFontsById, onFontSelected],
   );
+
+  const handleFontSizeChanged = (
+    event: React.ChangeEvent<{ value: unknown }>,
+  ) => {
+    onFontSizeChanged?.(event.target.value as number);
+  };
 
   const currentFontId =
     selectedFont?.id ?? currentFont?.id ?? fonts?.[0]?.id ?? '';
@@ -82,6 +95,16 @@ export const FontList: React.FC<FontListProps> = ({
               ))}
             </Select>
           </FormControl>
+        </Grid>
+        <Grid>
+          <TextField
+            id={TEST_IDS.FONT_SIZE_INPUT}
+            label="Font Size"
+            variant="outlined"
+            type="number"
+            value={fontSize}
+            onChange={handleFontSizeChanged}
+          />
         </Grid>
       </Grid>
     </Card>

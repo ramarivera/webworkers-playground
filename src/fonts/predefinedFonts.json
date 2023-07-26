@@ -26,5 +26,33 @@
     "bold": true,
     "italic": true,
     "url": "https://fonts.cdnfonts.com/s/12165/Roboto-BoldItalic.woff"
+  },
+  {
+    "name": "Open Sans",
+    "url": "https://fonts.cdnfonts.com/s/14884/OpenSans-Regular.woff",
+    "display": "Open Sans (default)",
+    "bold": false,
+    "italic": false
+  },
+  {
+    "name": "Open Sans",
+    "url": "https://fonts.cdnfonts.com/s/14884/OpenSans-Italic.woff",
+    "display": "Open Sans (italic)",
+    "bold": false,
+    "italic": true
+  },
+  {
+    "name": "Open Sans",
+    "url": "https://fonts.cdnfonts.com/s/14884/OpenSans-Bold.woff",
+    "display": "Open Sans (bold)",
+    "bold": true,
+    "italic": false
+  },
+  {
+    "name": "Open Sans",
+    "url": "https://fonts.cdnfonts.com/s/14884/OpenSans-BoldItalic.woff",
+    "display": "Open Sans (bold italic)",
+    "bold": true,
+    "italic": true
   }
 ]

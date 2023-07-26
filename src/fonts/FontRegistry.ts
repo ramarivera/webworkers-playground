@@ -74,7 +74,9 @@ export class FontRegistry {
       },
     );
 
-    const promiseResults = await Promise.all(fontStatusPromises);
+    const promiseResults = (await Promise.all(fontStatusPromises)).sort(
+      (a, b) => a.displayName.localeCompare(b.displayName),
+    );
 
     return promiseResults;
   }

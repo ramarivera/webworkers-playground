@@ -3,10 +3,7 @@ import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
 import { userEvent, waitFor, within } from '@storybook/testing-library';
 
-import {
-  PREDEFINED_FONTS,
-  CUSTOM_FONT_DISPLAY_KEY,
-} from '../../fonts/constants';
+import { PREDEFINED_FONTS } from '../../fonts/constants';
 import {
   convertPredefinedFontToFontRegistrationData,
   generateIdForFontRegistrationData,
@@ -65,6 +62,9 @@ const meta = {
     customFontIsItalic: {
       control: 'boolean',
       if: { arg: 'customFontsEnabled', truthy: true },
+    },
+    initialFontSize: {
+      control: 'number',
     },
   },
   parameters: {

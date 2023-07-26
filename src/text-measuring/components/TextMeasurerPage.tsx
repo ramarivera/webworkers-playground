@@ -14,11 +14,8 @@ import {
   CustomFontInput,
   CustomFontInputData,
 } from '../../fonts/components/CustomFontInput';
-import { FontList } from '../../fonts/components/FontList';
-import {
-  CUSTOM_FONT_DISPLAY_KEY,
-  DEFAULT_FONT_SIZE,
-} from '../../fonts/constants';
+import { FontInput } from '../../fonts/components/FontInput';
+import { DEFAULT_FONT_SIZE } from '../../fonts/constants';
 import { useFontRegistry } from '../../fonts/hooks';
 import { RegisteredFontData } from '../../fonts/types';
 import { buildCssStringForFont } from '../../fonts/utils';
@@ -35,6 +32,7 @@ export type TextMeasurerPageProps = {
   customFontUrl?: string;
   customFontIsBold?: boolean;
   customFontIsItalic?: boolean;
+  initialFontSize?: number;
 };
 
 export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
@@ -45,10 +43,14 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
   customFontUrl,
   customFontIsBold,
   customFontIsItalic,
+  initialFontSize,
 }) => {
   const [text, setText] = useState<string>(initialText);
   const [currentFontId, setCurrentFontId] = useState<string>(
     selectedFontId ?? '',
+  );
+  const [fontSize, setFontSize] = useState<number>(
+    initialFontSize ?? DEFAULT_FONT_SIZE,
   );
   const [measurementResult, setMeasurementResult] = useState<number | null>(
     null,
@@ -125,7 +127,7 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
         .withBold(selectedFontData.isBold)
         .withItalic(selectedFontData.isItalic)
         .withFont(selectedFontData.font)
-        .withSize(DEFAULT_FONT_SIZE)
+        .withSize(fontSize)
         .calculateWidth();
 
       if (isPromise(result)) {
@@ -137,7 +139,7 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
 
       setIsMeasuring(false);
     },
-    [selectedFontData, textMeasurer, info],
+    [selectedFontData, textMeasurer, info, fontSize],
   );
 
   const handleRegisterCustomFontClicked = useCallback(
@@ -205,11 +207,13 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
       <Grid container spacing={2} direction={'row'} padding={2}>
         <Grid container direction={'column'} spacing={2} xs={6}>
           <Grid>
-            <FontList
+            <FontInput
               fonts={fonts}
+              fontSize={fontSize}
               selectedFont={selectedFontData}
+              onFontSizeChanged={setFontSize}
               onFontSelected={handleFontChanged}
-            ></FontList>
+            ></FontInput>
           </Grid>
           <Grid>
             {isCustomFontEnabled && (

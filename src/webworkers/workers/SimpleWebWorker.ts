@@ -3,7 +3,7 @@
 import { isDefined } from '../../core/utils/assertions';
 import { CanvasTextMeasurer } from '../../text-measuring/measurers/CanvasTextMeasurer';
 import { Message } from '../messages';
-import { isMessageOfType, postTypedMessage } from '../utils';
+import { isMessageOfType, logObjectKeys, postTypedMessage } from '../utils';
 
 function log(...args: unknown[]): void {
   console.log(`[SimpleWebWorker]`, ...args);
@@ -14,7 +14,6 @@ function handleWorkerMessage(event: MessageEvent<Message>): void {
   const { message } = event.data;
 
   log(`Received message: ${message}`);
-  log(`Received data: ${event.data}`);
 
   if (!isMessageOfType(event, 'measureText')) {
     log(`Unknown message: ${message}`);
@@ -22,6 +21,10 @@ function handleWorkerMessage(event: MessageEvent<Message>): void {
   }
 
   log(`Received measureText message`);
+
+  logObjectKeys(event.data.params, (key, value) =>
+    log(`- event.data.params.${key}=${value}`),
+  );
 
   const data = event.data;
   let canvas: undefined | OffscreenCanvas;
@@ -38,6 +41,8 @@ function handleWorkerMessage(event: MessageEvent<Message>): void {
 
   const context = canvas.getContext('2d')!;
 
+  log('before context.font=', context.font);
+
   // Just to reuse something from the main application
   const measurer = new CanvasTextMeasurer()
     .withText(data.params.text)
@@ -48,6 +53,8 @@ function handleWorkerMessage(event: MessageEvent<Message>): void {
     .withCanvasContext(context);
 
   const result = measurer.calculateWidth();
+
+  log('after context.font=', context.font);
 
   log(`Sending result: ${result}`);
 
