@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -55,11 +55,21 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
   const [isCustomFontLoading, setIsCustomFontLoading] =
     useState<boolean>(false);
 
+  const [servicesAreReady, setServicesAreReady] = useState<boolean>(false);
+
   const textMeasurer = useTextMeasurer(measurerType);
-  const { selectedFontData, fonts, registerFont } =
+  const { selectedFontData, fonts, registerFont, isInitialized } =
     useFontRegistry(currentFontId);
 
   const { info, success, warning } = useShowNotifications();
+
+  useEffect(() => {
+    if (isInitialized) {
+      delay(1000).then(() => {
+        setServicesAreReady(true);
+      });
+    }
+  }, [isInitialized]);
 
   const isCustomFontEnabled = customFontsEnabled === true;
 
@@ -168,7 +178,7 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
   return (
     <Paper elevation={5}>
       <Typography textAlign={'center'} variant="h2">
-        Welcome
+        {servicesAreReady ? 'Welcome' : 'Loading...'}
       </Typography>
       <Grid container spacing={2} direction={'row'} padding={2}>
         <Grid container direction={'column'} spacing={2} xs={6}>

@@ -1,12 +1,19 @@
 import React, { useCallback, useMemo } from 'react';
 
 import Card from '@mui/material/Card';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 
 import { RegisteredFontData } from '../types';
+
+const TEST_IDS = {
+  FONT_LIST: 'font-list-select',
+  FONT_LIST_LABEL: 'font-list-label',
+};
 
 interface FontListProps {
   fonts: RegisteredFontData[];
@@ -58,17 +65,23 @@ export const FontList: React.FC<FontListProps> = ({
           </Typography>
         </Grid>
         <Grid>
-          <Select
-            style={{ minWidth: '200px' }}
-            value={currentFontId}
-            onChange={handleFontSelected}
-          >
-            {fonts.map((font) => (
-              <MenuItem key={font.id} value={font.id}>
-                {font.displayName}
-              </MenuItem>
-            ))}
-          </Select>
+          <FormControl>
+            <InputLabel id={TEST_IDS.FONT_LIST_LABEL}>Font</InputLabel>
+            <Select
+              id={TEST_IDS.FONT_LIST}
+              labelId={TEST_IDS.FONT_LIST_LABEL}
+              label="Font"
+              style={{ minWidth: '200px' }}
+              value={currentFontId}
+              onChange={handleFontSelected}
+            >
+              {fonts.map((font) => (
+                <MenuItem key={font.id} value={font.id}>
+                  {font.displayName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
       </Grid>
     </Card>

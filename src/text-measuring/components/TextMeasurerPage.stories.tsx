@@ -1,4 +1,6 @@
+import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
+import { userEvent, waitFor, within } from '@storybook/testing-library';
 
 import {
   PREDEFINED_FONTS,
@@ -19,6 +21,20 @@ const availableFonts = PREDEFINED_FONTS.map((font) => {
     id: generateIdForFontRegistrationData(fontData),
   };
 });
+
+function getParentElementUntilBody(element: HTMLElement): HTMLElement | null {
+  if (element.tagName === 'BODY') {
+    return element;
+  }
+
+  const parentElement = element.parentElement;
+
+  if (!parentElement) {
+    return null;
+  }
+
+  return getParentElementUntilBody(parentElement);
+}
 
 const meta = {
   title: 'Example/TextMeasurerPage',
@@ -70,6 +86,64 @@ export const HelloWorld: Story = {
   args: {
     ...Empty.args,
     initialText: 'Hello World',
+  },
+};
+
+export const NormalFlowAutoplay: Story = {
+  ...Empty,
+  args: {
+    ...Empty.args,
+    initialText: 'Hello World',
+  },
+  async play({ canvasElement, step }) {
+    const canvas = within(canvasElement);
+
+    await step('Component is ready', async () => {
+      await waitFor(
+        () => {
+          expect(canvas.getByText('Welcome')).toBeVisible();
+        },
+        { timeout: 5000 },
+      );
+    });
+
+    await step('Select "Roboto bold italic"', async () => {
+      const maybeDocument = getParentElementUntilBody(canvasElement);
+
+      if (!maybeDocument) {
+        throw new Error('Could not find document element');
+      }
+
+      const document = within(maybeDocument);
+
+      await userEvent.click(canvas.getByLabelText('Font'));
+
+      const listBox = document.getByRole('listbox');
+
+      await waitFor(() => {
+        expect(listBox).toBeVisible();
+      });
+
+      await userEvent.click(within(listBox).getByText('Roboto (italic bold)'));
+    });
+
+    await step('Type "Canvas basics"', async () => {
+      await userEvent.clear(canvas.getByLabelText('Text to measure:'));
+      await userEvent.type(
+        canvas.getByLabelText('Text to measure:'),
+        'Canvas basics',
+      );
+    });
+
+    await step('Click on "Measure"', async () => {
+      await userEvent.click(canvas.getByRole('button', { name: 'Measure' }));
+    });
+
+    await step('Compare results', async () => {
+      expect(canvas.getByLabelText('Measurement result:')).toHaveValue(
+        '85.2578125',
+      );
+    });
   },
 };
 
