@@ -4,6 +4,11 @@ export interface FontRegistrationData {
   isBold: boolean;
   isItalic: boolean;
   url: string;
+  isCustom: boolean;
+}
+
+export interface RegisteredFontData extends FontRegistrationData {
+  id: string;
 }
 
 export interface PredefinedFont {

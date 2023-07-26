@@ -4,60 +4,67 @@ import { useExecuteExactlyOnce } from '../core/utils/hooks';
 
 import { PREDEFINED_FONTS } from './constants';
 import { FontRegistry } from './FontRegistry';
-import { FontRegistrationData } from './types';
+import { FontRegistrationData, RegisteredFontData } from './types';
+import { convertPredefinedFontToFontRegistrationData } from './utils';
 
-export function useFontRegistry(selectedFont: string) {
+export function useFontRegistry(selectedFontId: string) {
+  const [registeredFonts, setRegisteredFonts] = useState<RegisteredFontData[]>(
+    [],
+  );
+
   const fontRegistry = FontRegistry.getInstance();
 
+  const registerFontAndUpdateState = useCallback(
+    async (registrationData: FontRegistrationData) => {
+      await fontRegistry.registerFont(registrationData);
+      const fontsData = await fontRegistry.getFontsData();
+      setRegisteredFonts(fontsData);
+    },
+    [fontRegistry],
+  );
+
   const initializeFontRegistry = useCallback(async () => {
-    const initializationPromises = PREDEFINED_FONTS.map(async (font) => {
-      await fontRegistry.registerFont({
-        font: font.name,
-        isBold: font.bold,
-        isItalic: font.italic,
-        url: font.url,
-        displayName: font.display,
-      });
-    });
+    console.log('Initializing font registry');
+
+    const initializationPromises = PREDEFINED_FONTS.map(
+      async (font) =>
+        await registerFontAndUpdateState(
+          convertPredefinedFontToFontRegistrationData(font),
+        ),
+    );
 
     await Promise.all(initializationPromises);
-  }, [fontRegistry]);
+  }, [registerFontAndUpdateState]);
 
   const { isDone: isInitialized } = useExecuteExactlyOnce(
     initializeFontRegistry,
   );
 
-  const [registeredFonts, setRegisteredFonts] = useState<
-    FontRegistrationData[]
-  >([]);
-
-  const fontDataByDisplayKey = useMemo(
+  const fontDataById = useMemo(
     () =>
       registeredFonts.reduce(
         (acc, fontData) => ({
           ...acc,
-          [fontData.displayName]: fontData,
+          [fontData.id]: fontData,
         }),
-        {} as Record<string, FontRegistrationData>,
+        {} as Record<string, RegisteredFontData>,
       ),
     [registeredFonts],
   );
 
   const selectedFontData = useMemo(
-    () => fontDataByDisplayKey[selectedFont],
-    [fontDataByDisplayKey, selectedFont],
+    () => fontDataById[selectedFontId],
+    [fontDataById, selectedFontId],
   );
 
   return {
     selectedFontData,
 
-    fonts: fontDataByDisplayKey,
+    fonts: registeredFonts,
 
-    registerFont: async (registrationData: FontRegistrationData) => {
-      await fontRegistry.registerFont(registrationData);
-      const fontsData = await fontRegistry.getFontsData();
-      setRegisteredFonts(fontsData);
-    },
+    fontById: fontDataById,
+
+    registerFont: registerFontAndUpdateState,
 
     isInitialized,
   };

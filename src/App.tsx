@@ -1,15 +1,15 @@
 import './App.css';
 import { AppWrapper } from './core/AppWrapper';
-import { TextMeasurer } from './text-measuring/components/TextMeasurer';
+import { TextMeasurerPage } from './text-measuring/components/TextMeasurerPage';
 
 function App() {
   return (
     <AppWrapper>
-      <TextMeasurer
+      <TextMeasurerPage
         initialText="Hello!"
         measurerType="canvas"
         selectedFont="custom"
-      ></TextMeasurer>
+      ></TextMeasurerPage>
     </AppWrapper>
   );
 }

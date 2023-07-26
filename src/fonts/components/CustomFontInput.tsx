@@ -25,6 +25,7 @@ import { wrapValidatableSchema } from '../../core/utils/forms';
 const customFontInputSchema = object({
   url: string().url('A valid font URL is required'),
   name: string().nonempty('A name is required'),
+  displayName: string(),
   isBold: coerce.boolean(),
   isItalic: coerce.boolean(),
 });
@@ -43,6 +44,7 @@ export interface CustomFontInputProps {
     url: string,
     isBold: boolean,
     isItalic: boolean,
+    displayName?: string,
   ) => void;
 }
 
@@ -67,7 +69,13 @@ export const CustomFontInput: React.FC<CustomFontInputProps> = ({
   // }, [isSubmitSuccessful, reset]);
 
   const handleRegisterFont: SubmitHandler<CustomFontInputData> = (values) => {
-    onFontRegistered(values.name, values.url, values.isBold, values.isItalic);
+    onFontRegistered(
+      values.name,
+      values.url,
+      values.isBold,
+      values.isItalic,
+      values.displayName,
+    );
   };
 
   const handleValidationError: SubmitErrorHandler<CustomFontInputData> = (
@@ -80,7 +88,6 @@ export const CustomFontInput: React.FC<CustomFontInputProps> = ({
   return (
     <FormProvider {...formMethods}>
       <Card
-        variant="outlined"
         component={'form'}
         onSubmit={handleSubmit(handleRegisterFont, handleValidationError)}
         noValidate
@@ -88,12 +95,19 @@ export const CustomFontInput: React.FC<CustomFontInputProps> = ({
         <FormGroup>
           <Grid container spacing={2} direction={'column'} padding={1}>
             <Grid>
-              <Typography textAlign={'center'} variant="h5">
+              <Typography textAlign={'center'} variant="h6">
                 Custom font
               </Typography>
             </Grid>
             <Grid>
               <TextField required label="Name" variant="outlined" name="name" />
+            </Grid>
+            <Grid>
+              <TextField
+                label="Display name"
+                variant="outlined"
+                name="displayName"
+              />
             </Grid>
             <Grid>
               <TextField
