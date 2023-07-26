@@ -6,6 +6,20 @@ export function buildCssStringForFont(
   isItalic: boolean,
   fontSize: number = DEFAULT_FONT_SIZE,
 ) {
+  const fontString = `${fontSize}px "${buildCssStringForFontWithoutSize(
+    fontName,
+    isBold,
+    isItalic,
+  )}"`;
+
+  return fontString;
+}
+
+export function buildCssStringForFontWithoutSize(
+  fontName: string,
+  isBold: boolean,
+  isItalic: boolean,
+) {
   let fontString = '';
 
   if (isBold) {
@@ -16,7 +30,7 @@ export function buildCssStringForFont(
     fontString += 'italic ';
   }
 
-  fontString += `${fontSize}px ${fontName}`;
+  fontString += `"${fontName}"`;
 
   return fontString;
 }

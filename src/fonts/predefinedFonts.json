@@ -1,0 +1,30 @@
+[
+  {
+    "display": "Roboto (default)",
+    "name": "Roboto",
+    "bold": false,
+    "italic": false,
+    "url": "https://fonts.cdnfonts.com/s/12165/Roboto-Regular.woff"
+  },
+  {
+    "display": "Roboto (italic)",
+    "name": "Roboto",
+    "bold": false,
+    "italic": true,
+    "url": "https://fonts.cdnfonts.com/s/12165/Roboto-Italic.woff"
+  },
+  {
+    "display": "Roboto (bold)",
+    "name": "Roboto",
+    "bold": true,
+    "italic": false,
+    "url": "https://fonts.cdnfonts.com/s/12165/Roboto-Bold.woff"
+  },
+  {
+    "display": "Roboto (italic bold)",
+    "name": "Roboto",
+    "bold": true,
+    "italic": true,
+    "url": "https://fonts.cdnfonts.com/s/12165/Roboto-BoldItalic.woff"
+  }
+]
