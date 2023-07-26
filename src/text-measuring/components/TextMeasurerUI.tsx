@@ -2,10 +2,12 @@ import StraightenIcon from '@mui/icons-material/Straighten';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 
 export interface TextMeasurerUIProps {
   text: string;
+  cssFontString: string;
   isLoading: boolean;
   measurementResult: number | null;
   onMeasureClicked: (text: string) => void;
@@ -14,6 +16,7 @@ export interface TextMeasurerUIProps {
 
 export const TextMeasurerUI: React.FC<TextMeasurerUIProps> = ({
   text,
+  cssFontString,
   measurementResult,
   onMeasureClicked,
   onTextChanged,
@@ -31,12 +34,23 @@ export const TextMeasurerUI: React.FC<TextMeasurerUIProps> = ({
     <Card variant="outlined">
       <Grid container spacing={2} direction={'column'} padding={1}>
         <Grid>
+          <Typography textAlign={'center'} variant="h5">
+            Text
+          </Typography>
+        </Grid>
+        <Grid>
           <TextField
             label="Text to measure:"
             value={text}
             variant="outlined"
             onChange={handleTextChange}
           />
+        </Grid>
+        <Grid>
+          <span style={{ textAlign: 'center', fontFamily: cssFontString }}>
+            {' '}
+            Text preview: {text}{' '}
+          </span>
         </Grid>
         <Grid>
           <TextField
