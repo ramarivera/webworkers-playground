@@ -2,52 +2,26 @@
 import { isDefined } from '../../core/utils/assertions';
 import { buildCssStringForFont } from '../../fonts/utils';
 
+import { BaseTextMeasurer } from './BaseTextMeasurer';
 import { TextMeasurerInterface } from './types';
 
-export class CanvasTextMeasurer implements TextMeasurerInterface {
-  private text: string;
-  private font: string;
-  private size: number;
-  private bold: boolean;
-  private italic: boolean;
-  private canvasContext: CanvasRenderingContext2D | null;
+export type RenderingContext =
+  | CanvasRenderingContext2D
+  | OffscreenCanvasRenderingContext2D;
+
+export class CanvasTextMeasurer
+  extends BaseTextMeasurer
+  implements TextMeasurerInterface
+{
+  private canvasContext: RenderingContext | null;
   private cache = new Map<string, number>();
 
   constructor() {
-    this.text = '';
-    this.font = '';
-    this.size = 0;
-    this.bold = false;
-    this.italic = false;
+    super();
     this.canvasContext = null;
   }
 
-  withText(text: string) {
-    this.text = text;
-    return this;
-  }
-
-  withFont(font: string) {
-    this.font = font;
-    return this;
-  }
-
-  withSize(size: number) {
-    this.size = size;
-    return this;
-  }
-
-  withBold(bold: boolean = true) {
-    this.bold = bold;
-    return this;
-  }
-
-  withItalic(italic: boolean = true) {
-    this.italic = italic;
-    return this;
-  }
-
-  withCanvasContext(canvasContext: CanvasRenderingContext2D) {
+  withCanvasContext(canvasContext: RenderingContext) {
     this.canvasContext = canvasContext;
     return this;
   }
