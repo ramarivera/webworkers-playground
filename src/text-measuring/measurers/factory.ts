@@ -1,3 +1,5 @@
+import { textMeasurerWorkersService } from '../../webworkers/workers/text-measuring/TextMeasurerWorkerService';
+
 import { CanvasTextMeasurer } from './CanvasTextMeasurer';
 import { TextMeasurerInterface, TextMeasurerType } from './types';
 import { WebWorkerTextMeasurer } from './WebWorkerTextMeasurer';
@@ -15,9 +17,9 @@ export function getTextMeasurer(type: TextMeasurerType): TextMeasurerInterface {
       return new CanvasTextMeasurer().withCanvasContext(context);
     }
     case 'webworker': {
-      return new WebWorkerTextMeasurer().withCanvasFactory(
-        () => new OffscreenCanvas(100, 100),
-      );
+      return new WebWorkerTextMeasurer()
+        .withCanvasFactory(() => new OffscreenCanvas(100, 100))
+        .withWorkersService(textMeasurerWorkersService);
     }
   }
 

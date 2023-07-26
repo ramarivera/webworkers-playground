@@ -8,3 +8,9 @@ declare module '*.module.css' {
 declare interface OffscreenCanvas {
   transferControlToOffscreen(): MessagePort;
 }
+
+interface Window {
+  fonts: {
+    add(font: FontFace): void;
+  };
+}

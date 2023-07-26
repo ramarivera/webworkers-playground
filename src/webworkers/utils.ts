@@ -16,6 +16,22 @@ export function postTypedMessage<TMessage extends AllMessages>(
   transferrables?: Transferable[],
   targetOrigin?: string,
 ): void {
+  postUntypedMessage(
+    messagePort,
+    message,
+    params,
+    transferrables,
+    targetOrigin,
+  );
+}
+
+export function postUntypedMessage(
+  messagePort: MessagePort,
+  message: string,
+  params: Record<string, unknown>,
+  transferrables?: Transferable[],
+  targetOrigin?: string,
+): void {
   if (!transferrables || transferrables.length === 0) {
     messagePort.postMessage({ message, params });
     return;

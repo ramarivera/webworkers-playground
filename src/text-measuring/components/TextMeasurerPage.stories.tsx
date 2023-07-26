@@ -3,7 +3,7 @@ import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
 import { userEvent, waitFor, within } from '@storybook/testing-library';
 
-import { PREDEFINED_FONTS } from '../../fonts/constants';
+import { PREDEFINED_FONTS } from '../../fonts/predefinedFonts';
 import {
   convertPredefinedFontToFontRegistrationData,
   generateIdForFontRegistrationData,
