@@ -47,7 +47,7 @@ export const TextMeasurerUI: React.FC<TextMeasurerUIProps> = ({
           />
         </Grid>
         <Grid>
-          <span style={{ textAlign: 'center', fontFamily: cssFontString }}>
+          <span style={{ textAlign: 'center', font: cssFontString }}>
             {' '}
             Text preview: {text}{' '}
           </span>
@@ -55,7 +55,7 @@ export const TextMeasurerUI: React.FC<TextMeasurerUIProps> = ({
         <Grid>
           <TextField
             label="Measurement result:"
-            value={measurementResult || ''}
+            value={measurementResult}
             variant="outlined"
             InputProps={{
               readOnly: true,

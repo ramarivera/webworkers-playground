@@ -3,7 +3,6 @@
 // a Checkbox for bold
 // a Checkbox for italic
 // a LoadingButton from Material UI that when clicked will call onFontRegistered callback prop with the font url, bold and italic values.
-import { useEffect } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import FontDownloadIcon from '@mui/icons-material/FontDownload';
@@ -59,17 +58,13 @@ export const CustomFontInput: React.FC<CustomFontInputProps> = ({
     values: initialValues,
   });
 
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitSuccessful },
-  } = formMethods;
+  const { handleSubmit } = formMethods;
 
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
-  }, [isSubmitSuccessful, reset]);
+  // useEffect(() => {
+  //   if (isSubmitSuccessful) {
+  //     reset();
+  //   }
+  // }, [isSubmitSuccessful, reset]);
 
   const handleRegisterFont: SubmitHandler<CustomFontInputData> = (values) => {
     onFontRegistered(values.name, values.url, values.isBold, values.isItalic);

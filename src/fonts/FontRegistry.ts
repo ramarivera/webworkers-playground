@@ -23,7 +23,7 @@ export class FontRegistry {
     const { font, isBold, isItalic, url } = registrationData;
 
     // Update registry internal state to match only manually registered fonts
-    const registryKey = this.buildFontKey(font, isBold, isItalic);
+    const registryKey = this.buildFontKey(font, isBold, isItalic, url);
 
     if (this.fonts.has(registryKey)) {
       return;
@@ -101,8 +101,13 @@ export class FontRegistry {
     };
   }
 
-  private buildFontKey(font: string, isBold: boolean, isItalic: boolean) {
+  private buildFontKey(
+    font: string,
+    isBold: boolean,
+    isItalic: boolean,
+    url: string,
+  ) {
     const { weight, style } = this.buildFontMetadata(isBold, isItalic);
-    return `${font}-${weight}-${style}`;
+    return `${font}-${weight}-${style}-${url}`;
   }
 }

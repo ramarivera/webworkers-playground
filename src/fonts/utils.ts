@@ -6,11 +6,11 @@ export function buildCssStringForFont(
   isItalic: boolean,
   fontSize: number = DEFAULT_FONT_SIZE,
 ) {
-  const fontString = `${fontSize}px "${buildCssStringForFontWithoutSize(
+  const fontString = `${fontSize}px ${buildCssStringForFontWithoutSize(
     fontName,
     isBold,
     isItalic,
-  )}"`;
+  )}`;
 
   return fontString;
 }
