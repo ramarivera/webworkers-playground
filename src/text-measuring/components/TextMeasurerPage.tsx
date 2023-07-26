@@ -95,7 +95,6 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
       selectedFontData.isItalic,
     );
 
-  console.log('css is ', selectedFontCssString);
   const handleMeasureClicked = useCallback(
     async (textToMeasure: string) => {
       if (!selectedFontData) {
