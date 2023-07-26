@@ -33,7 +33,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Empty: Story = {
+const Empty: Story = {
   args: {
     fonts: [],
     onFontSelected: () => {},
@@ -46,7 +46,6 @@ export const StaticFonts: Story = {
     ...Empty.args,
     fonts: PREDEFINED_FONTS.map((font) => {
       const fontData = convertPredefinedFontToFontRegistrationData(font);
-
       return {
         ...fontData,
         id: generateIdForFontRegistrationData(fontData),

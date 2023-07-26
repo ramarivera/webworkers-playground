@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useState } from 'react';
 
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
@@ -64,12 +66,16 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
   const { info, success, warning } = useShowNotifications();
 
   useEffect(() => {
-    if (isInitialized) {
-      delay(1000).then(() => {
+    if (isInitialized && !servicesAreReady) {
+      delay(2500).then(() => {
         setServicesAreReady(true);
+
+        if (!currentFontId && fonts.length > 0) {
+          setCurrentFontId(fonts[0].id);
+        }
       });
     }
-  }, [isInitialized]);
+  }, [isInitialized, servicesAreReady, fonts, currentFontId]);
 
   const isCustomFontEnabled = customFontsEnabled === true;
 
@@ -177,9 +183,25 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
 
   return (
     <Paper elevation={5}>
-      <Typography textAlign={'center'} variant="h2">
-        {servicesAreReady ? 'Welcome' : 'Loading...'}
-      </Typography>
+      <Grid
+        container
+        direction={'row'}
+        justifyContent={'center'}
+        alignItems={'center'}
+      >
+        <Grid xs={8}>
+          <Typography textAlign={'center'} variant="h2">
+            {servicesAreReady ? 'Welcome' : 'Loading...'}
+          </Typography>
+        </Grid>
+        {!servicesAreReady && (
+          <Grid>
+            <Box sx={{ display: 'flex' }}>
+              <CircularProgress />
+            </Box>
+          </Grid>
+        )}
+      </Grid>
       <Grid container spacing={2} direction={'row'} padding={2}>
         <Grid container direction={'column'} spacing={2} xs={6}>
           <Grid>

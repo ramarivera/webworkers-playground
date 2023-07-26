@@ -7,8 +7,7 @@ function App() {
     <AppWrapper>
       <TextMeasurerPage
         initialText="Hello!"
-        measurerType="canvas"
-        selectedFont="custom"
+        measurerType="webworker"
       ></TextMeasurerPage>
     </AppWrapper>
   );

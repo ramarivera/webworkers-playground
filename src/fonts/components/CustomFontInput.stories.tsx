@@ -25,10 +25,17 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Empty: Story = {
+const Empty: Story = {
   args: {
-    onFontRegistered: () => {},
+    initialValues: {
+      name: '',
+      url: '',
+      displayName: '',
+      isBold: false,
+      isItalic: false,
+    },
     isLoading: false,
+    onFontRegistered: () => {},
   },
 };
 
@@ -40,7 +47,7 @@ export const Loading: Story = {
   },
 };
 
-export const WithFont: Story = {
+export const WithFontRegistering: Story = {
   ...Empty,
   args: {
     ...Empty.args,

@@ -11,6 +11,7 @@ import {
   convertPredefinedFontToFontRegistrationData,
   generateIdForFontRegistrationData,
 } from '../../fonts/utils';
+import { TEXT_MEASURER_TYPES } from '../measurers/types';
 
 import { TextMeasurerPage } from './TextMeasurerPage';
 
@@ -44,7 +45,7 @@ const meta = {
     initialText: { control: 'text' },
     measurerType: {
       control: 'select',
-      options: ['canvas', 'offscreen-canvas', 'html'],
+      options: TEXT_MEASURER_TYPES,
     },
     selectedFontId: {
       control: 'select',
@@ -55,15 +56,15 @@ const meta = {
     },
     customFontUrl: {
       control: 'text',
-      if: { arg: 'selectedFont', eq: CUSTOM_FONT_DISPLAY_KEY },
+      if: { arg: 'customFontsEnabled', truthy: true },
     },
     customFontIsBold: {
       control: 'boolean',
-      if: { arg: 'selectedFont', eq: CUSTOM_FONT_DISPLAY_KEY },
+      if: { arg: 'customFontsEnabled', truthy: true },
     },
     customFontIsItalic: {
       control: 'boolean',
-      if: { arg: 'selectedFont', eq: CUSTOM_FONT_DISPLAY_KEY },
+      if: { arg: 'customFontsEnabled', truthy: true },
     },
   },
   parameters: {
@@ -91,9 +92,9 @@ export const HelloWorld: Story = {
 };
 
 const NormalFlowAutoplay: Story = {
-  ...Empty,
+  ...HelloWorld,
   args: {
-    ...Empty.args,
+    ...HelloWorld.args,
     initialText: 'Hello World',
   },
   async play({ canvasElement, step }) {
@@ -149,10 +150,9 @@ const NormalFlowAutoplay: Story = {
 };
 
 export const NormalFlowDocumentCanvas: Story = {
-  ...Empty,
+  ...HelloWorld,
   args: {
-    ...Empty.args,
-    initialText: 'Hello Document!',
+    ...HelloWorld.args,
     measurerType: 'canvas',
   },
   async play(context) {
@@ -161,10 +161,9 @@ export const NormalFlowDocumentCanvas: Story = {
 };
 
 export const NormalFlowOffscreenCanvas: Story = {
-  ...Empty,
+  ...HelloWorld,
   args: {
-    ...Empty.args,
-    initialText: 'Hello Offscreen!',
+    ...HelloWorld.args,
     measurerType: 'offscreen-canvas',
   },
   async play(context) {
@@ -172,14 +171,12 @@ export const NormalFlowOffscreenCanvas: Story = {
   },
 };
 
-export const WithBangers: Story = {
-  ...Empty,
+export const CustomFontPanel: Story = {
+  ...HelloWorld,
   args: {
-    ...Empty.args,
-    initialText: 'Testing BANGERS',
+    ...HelloWorld.args,
     customFontsEnabled: true,
-    customFontUrl:
-      'https://fonts.googleapis.com/css2?family=Bangers&display=swap',
+    customFontUrl: 'https://fonts.cdnfonts.com/s/15017/Bangers-Regular.woff',
     customFontIsItalic: false,
     customFontIsBold: false,
   },

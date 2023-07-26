@@ -26,13 +26,22 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Empty: Story = {
+const Empty: Story = {
   args: {
     text: '',
     cssFontString: '',
     measurementResult: null,
     isLoading: false,
     onMeasureClicked: () => {},
+  },
+};
+
+export const Loading: Story = {
+  ...Empty,
+  args: {
+    ...Empty.args,
+    text: 'Hello World',
+    isLoading: true,
   },
 };
 

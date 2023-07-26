@@ -56,8 +56,6 @@ export class FontRegistry {
     );
   }
 
-  // https://fonts.cdnfonts.com/s/15017/Bangers-Regular.woff
-
   public async getFontsData(): Promise<RegisteredFontData[]> {
     const fontStatusPromises = Array.from(this.fonts.values()).map(
       (fontData: RegisteredFontData) => {

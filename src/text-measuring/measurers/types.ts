@@ -7,4 +7,13 @@ export interface TextMeasurerInterface {
   calculateWidth(): number | Promise<number>;
 }
 
-export type TextMeasurerType = 'canvas' | 'offscreen-canvas' | 'html';
+export const TEXT_MEASURER_TYPES = [
+  'canvas',
+  'offscreen-canvas',
+  'html',
+  'webworker',
+  'webworker-pool',
+  'webworker-clink',
+] as const;
+
+export type TextMeasurerType = (typeof TEXT_MEASURER_TYPES)[number];

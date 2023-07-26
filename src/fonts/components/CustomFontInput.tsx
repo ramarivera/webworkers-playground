@@ -50,7 +50,13 @@ export interface CustomFontInputProps {
 
 export const CustomFontInput: React.FC<CustomFontInputProps> = ({
   isLoading,
-  initialValues,
+  initialValues = {
+    name: '',
+    url: '',
+    displayName: '',
+    isBold: false,
+    isItalic: false,
+  },
   onFontRegistered,
 }) => {
   const { warning } = useShowNotifications();
@@ -61,12 +67,6 @@ export const CustomFontInput: React.FC<CustomFontInputProps> = ({
   });
 
   const { handleSubmit } = formMethods;
-
-  // useEffect(() => {
-  //   if (isSubmitSuccessful) {
-  //     reset();
-  //   }
-  // }, [isSubmitSuccessful, reset]);
 
   const handleRegisterFont: SubmitHandler<CustomFontInputData> = (values) => {
     onFontRegistered(
@@ -83,6 +83,7 @@ export const CustomFontInput: React.FC<CustomFontInputProps> = ({
   ) => {
     const firstErrorKey = Object.keys(errors)[0];
     warning(`Error validating ${firstErrorKey} field`);
+    console.log('Error validating custom font fields', errors);
   };
 
   return (
