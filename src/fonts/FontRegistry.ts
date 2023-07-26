@@ -4,11 +4,12 @@
 
 import FontFaceObserver from 'fontfaceobserver';
 
-import { FontRegistrationData } from './types';
+import { FontRegistrationData, RegisteredFontData } from './types';
+import { buildFontMetadata, generateIdForFontRegistrationData } from './utils';
 
 export class FontRegistry {
   private static instance: FontRegistry;
-  private fonts = new Map<string, FontRegistrationData>();
+  private fonts = new Map<string, RegisteredFontData>();
 
   private constructor() {}
 
@@ -20,10 +21,16 @@ export class FontRegistry {
   }
 
   public async registerFont(registrationData: FontRegistrationData) {
-    const { font, isBold, isItalic, url } = registrationData;
+    const { font, isBold, isItalic, url, displayName } = registrationData;
 
     // Update registry internal state to match only manually registered fonts
-    const registryKey = this.buildFontKey(font, isBold, isItalic, url);
+    const registryKey = this.buildFontKey(
+      font,
+      displayName,
+      isBold,
+      isItalic,
+      url,
+    );
 
     if (this.fonts.has(registryKey)) {
       return;
@@ -41,16 +48,19 @@ export class FontRegistry {
     // return watcher promise that will resolve when font is loaded
     return await this.getObserverPromiseForFont(font, isBold, isItalic).then(
       () => {
-        this.fonts.set(registryKey, registrationData);
+        this.fonts.set(registryKey, {
+          ...registrationData,
+          id: registryKey,
+        });
       },
     );
   }
 
   // https://fonts.cdnfonts.com/s/15017/Bangers-Regular.woff
 
-  public async getFontsData(): Promise<FontRegistrationData[]> {
+  public async getFontsData(): Promise<RegisteredFontData[]> {
     const fontStatusPromises = Array.from(this.fonts.values()).map(
-      (fontData: FontRegistrationData) => {
+      (fontData: RegisteredFontData) => {
         const observer = this.getObserverPromiseForFont(
           fontData.font,
           fontData.isBold,
@@ -92,22 +102,22 @@ export class FontRegistry {
   }
 
   private buildFontMetadata(isBold: boolean, isItalic: boolean) {
-    const weight = isBold ? 'bold' : 'normal';
-    const style = isItalic ? 'italic' : 'normal';
-
-    return {
-      weight,
-      style,
-    };
+    return buildFontMetadata(isBold, isItalic);
   }
 
   private buildFontKey(
     font: string,
+    displayName: string,
     isBold: boolean,
     isItalic: boolean,
     url: string,
   ) {
-    const { weight, style } = this.buildFontMetadata(isBold, isItalic);
-    return `${font}-${weight}-${style}-${url}`;
+    return generateIdForFontRegistrationData({
+      font,
+      displayName,
+      isBold,
+      isItalic,
+      url,
+    });
   }
 }
