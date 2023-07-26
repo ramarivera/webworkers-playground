@@ -1,11 +1,13 @@
+import React from 'react';
+
 import type { Preview } from '@storybook/react';
 
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import { withThemeFromJSXProvider } from '@storybook/addon-styling';
-import { lightTheme, darkTheme } from '../src/Themes';
-
-/* TODO: update import for your custom Material UI themes */
-// import { lightTheme, darkTheme } from '../path/to/themes';
+import { lightTheme, darkTheme } from '../src/core/ui/Themes';
+import { RecoilRoot } from 'recoil';
+import { NotificationsContainer } from '../src/core/notifications/NotificationsContainer';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -34,6 +36,15 @@ const preview: Preview = {
       defaultTheme: 'light',
       Provider: ThemeProvider,
     }),
+
+    // Adds Recoil state management support.
+    (Story) => (
+      <RecoilRoot>
+        <NotificationsContainer>
+          <Story />
+        </NotificationsContainer>
+      </RecoilRoot>
+    ),
   ],
 };
 
