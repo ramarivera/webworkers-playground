@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import { isDefined } from '../../core/utils/assertions';
 import { buildCssStringForFont } from '../../fonts/utils';
-import { isDefined } from '../../utils/assertions';
 
 import { TextMeasurerInterface } from './types';
 
