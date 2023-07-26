@@ -25,7 +25,6 @@ export class FontFaceObserverFontAwaiter
     const observer = new FontFaceObserver(font, fontMetadata);
 
     try {
-      // document.fonts.add(_fontFace);
       await observer.load();
     } catch (error) {
       throw new Error(
