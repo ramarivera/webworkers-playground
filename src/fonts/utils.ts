@@ -67,14 +67,29 @@ export function buildFontMetadata(isBold: boolean, isItalic: boolean) {
   };
 }
 
+export function buildFontFace(
+  font: string,
+  url: string,
+  isBold: boolean,
+  isItalic: boolean,
+) {
+  const metadata = buildFontMetadata(isBold, isItalic);
+  return new FontFace(font, `url(${url})`, metadata);
+}
+
 export function generateIdForFontRegistrationData(
-  fontRegistrationData: Omit<FontRegistrationData, 'isCustom'>,
+  fontRegistrationData: Omit<
+    FontRegistrationData,
+    'isCustom' | 'displayName'
+  > & {
+    displayName?: string;
+  },
 ) {
   const { font, displayName, isBold, isItalic, url } = fontRegistrationData;
   const weight = isBold ? 'bold' : 'normal';
   const style = isItalic ? 'italic' : 'normal';
   // We hash the display name to be compatible with storybook Controls and URL params
-  const hashedDisplayName = hashString(displayName);
+  const hashedDisplayName = displayName ? `-${hashString(displayName)}` : '';
 
-  return `${font}-${weight}-${style}-${url.length}-${hashedDisplayName}`;
+  return `${font}-${weight}-${style}-${url.length}${hashedDisplayName}`;
 }

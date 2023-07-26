@@ -1,18 +1,38 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useExecuteExactlyOnce } from '../core/utils/hooks';
+import { textMeasurerWorkersService } from '../webworkers/workers/text-measuring/TextMeasurerWorkerService';
 
-import { PREDEFINED_FONTS } from './constants';
-import { FontRegistry } from './FontRegistry';
+import { PREDEFINED_FONTS } from './predefinedFonts';
+import { FontFaceObserverFontAwaiter } from './registry/dependencies/awaiters/FontFaceObserverFontAwaiter';
+import { DocumentAdderFontObserver } from './registry/dependencies/observers/DocumentAdderFontObserver';
+import { NotifyWorkersObserver } from './registry/dependencies/observers/NotifySharedWorkerFontObserver';
+import { FontRegistry } from './registry/FontRegistry';
 import { FontRegistrationData, RegisteredFontData } from './types';
 import { convertPredefinedFontToFontRegistrationData } from './utils';
 
 export function useFontRegistry(selectedFontId: string) {
+  const fontRegistryRef = useRef<FontRegistry | null>(null);
+
+  if (!fontRegistryRef.current) {
+    fontRegistryRef.current = new FontRegistry({
+      fontAwaiter: new FontFaceObserverFontAwaiter(),
+      observers: [
+        new DocumentAdderFontObserver(),
+        new NotifyWorkersObserver(
+          textMeasurerWorkersService.broadcastMessage.bind(
+            textMeasurerWorkersService,
+          ),
+        ),
+      ],
+    });
+  }
+
+  const fontRegistry = fontRegistryRef.current;
+
   const [registeredFonts, setRegisteredFonts] = useState<RegisteredFontData[]>(
     [],
   );
-
-  const fontRegistry = FontRegistry.getInstance();
 
   const registerFontAndUpdateState = useCallback(
     async (registrationData: FontRegistrationData) => {
