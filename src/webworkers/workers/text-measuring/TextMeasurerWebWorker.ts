@@ -10,6 +10,7 @@ import { logObjectKeys } from '../../utils';
 import { handleMessageFromWorker } from '../worker-utils';
 
 let workerId: string | null = null;
+let WORKER_CANVAS: OffscreenCanvas | undefined;
 
 const fontRegistry: FontRegistry = new FontRegistry({
   fontAwaiter: new FontFaceFontAwaiter(),
@@ -98,15 +99,19 @@ async function handleMeasureTextMessage(
       log('Using canvas transferred from main thread');
       canvas = params.canvas;
     } else if (params.canvasMode === 'created') {
-      log('Creating canvas in worker');
-      canvas = new OffscreenCanvas(300, 150);
+      if (!WORKER_CANVAS) {
+        log('Creating canvas in worker');
+        canvas = new OffscreenCanvas(300, 150);
+        WORKER_CANVAS = canvas;
+      } else {
+        log('Reusing canvas in worker');
+        canvas = WORKER_CANVAS;
+      }
     }
 
     isDefined(canvas, 'Canvas is not set');
 
     const context = canvas.getContext('2d')!;
-
-    // log('before context.font=', context.font);
 
     // Just to reuse something from the main application
     const measurer = new CanvasTextMeasurer()
@@ -119,11 +124,8 @@ async function handleMeasureTextMessage(
 
     const result = measurer.calculateWidth();
 
-    // log('after context.font=', context.font);
-
     log(`Sending result: ${result}`);
 
-    // Send the result back to the main thread
     return {
       text: params.text,
       result,
