@@ -1,5 +1,6 @@
-import { AllMessages, MessagePayloads } from './messages';
+import { MessageParams, WorkerMessageType } from './messages';
 import { postTypedMessage } from './utils';
+import { handleMessageFromMainThread } from './workers/worker-utils';
 
 export abstract class WorkersService {
   protected workers: Worker[] = [];
@@ -8,23 +9,41 @@ export abstract class WorkersService {
   protected savedMessages: {
     message: string;
     params: Record<string, unknown>;
+    shouldWaitForResponse?: boolean;
   }[] = [];
 
   constructor(private maxWorkers: number) {}
 
-  protected abstract createWorker(): Worker;
+  protected abstract createWorker(): Promise<Worker>;
 
   protected registerWorker(worker: Worker) {
     this.workers.push(worker);
   }
 
-  public broadcastMessage<TMessage extends AllMessages>(
+  public async broadcastMessage<TMessage extends WorkerMessageType>(
     message: TMessage,
-    params: MessagePayloads[TMessage]['params'],
+    params: MessageParams<TMessage>,
     saveMessage: boolean = false,
+    waitForResponses: boolean = false,
   ) {
     if (saveMessage) {
-      this.savedMessages.push({ message, params });
+      this.savedMessages.push({
+        message,
+        params,
+        shouldWaitForResponse: waitForResponses,
+      });
+    }
+
+    if (waitForResponses) {
+      const responsePromises = [];
+
+      for (const worker of this.workers) {
+        responsePromises.push(
+          handleMessageFromMainThread(worker, message, params),
+        );
+      }
+
+      return await Promise.all(responsePromises);
     }
 
     for (const worker of this.workers) {
@@ -32,9 +51,9 @@ export abstract class WorkersService {
     }
   }
 
-  public getWorker(): Worker {
+  public async getWorker(): Promise<Worker> {
     if (this.workers.length < this.maxWorkers) {
-      const worker = this.createWorker();
+      const worker = await this.createWorker();
       this.currentWorkerIndex = this.workers.length - 1;
       return worker;
     }
@@ -42,10 +61,11 @@ export abstract class WorkersService {
     const worker = this.workers[this.currentWorkerIndex];
     this.currentWorkerIndex =
       (this.currentWorkerIndex + 1) % this.workers.length;
+
     return worker;
   }
 
-  protected getNewId() {
+  protected async getNewId() {
     return (++this.workerIdCounter).toString();
   }
 }

@@ -58,6 +58,13 @@ export function isMessageOfType<TMessage extends AllMessages>(
   return (event.data as MessagePayloads[TMessage]).message === message;
 }
 
+export function isMessageOfTypeUntyped(
+  event: MessageEvent<unknown>,
+  message: string,
+): event is MessageEvent<Record<string, unknown>> {
+  return (event.data as { message: string }).message === message;
+}
+
 export function logObjectKeys(
   obj: Record<string, unknown>,
   logFn: (key: string, value: unknown) => void,

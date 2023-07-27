@@ -1,6 +1,8 @@
-import { AllMessages, MessagePayloads } from './messages';
+import { MessageParams, WorkerMessageType } from './messages';
 
-export type Broadcaster = <TMessage extends AllMessages>(
+export type Broadcaster = <TMessage extends WorkerMessageType>(
   message: TMessage,
-  params: MessagePayloads[TMessage]['params'],
+  params: MessageParams<TMessage>,
+  savedMessages?: boolean,
+  waitForResponses?: boolean,
 ) => void;

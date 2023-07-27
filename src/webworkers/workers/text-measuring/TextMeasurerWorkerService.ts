@@ -1,18 +1,31 @@
-import { postTypedMessage, postUntypedMessage } from '../../utils';
+import { postUntypedMessage } from '../../utils';
 import { WorkersService } from '../../WorkersService';
+import {
+  handleMessageFromMainThread,
+  handleMessageFromMainThreadUntyped,
+} from '../worker-utils';
 
 export class TextMeasurerWorkersService extends WorkersService {
-  protected createWorker(): Worker {
-    const workerId = this.getNewId();
+  protected async createWorker(): Promise<Worker> {
+    const workerId = await this.getNewId();
 
     const worker = new Worker(
       new URL('./TextMeasurerWebWorker.ts', import.meta.url),
       { type: 'module' },
     );
 
-    postTypedMessage(worker, 'initialize', { id: workerId });
+    await handleMessageFromMainThread(worker, 'initialize', { id: workerId });
 
     for (const message of this.savedMessages) {
+      if (message.shouldWaitForResponse) {
+        await handleMessageFromMainThreadUntyped(
+          worker,
+          message.message,
+          message.params,
+        );
+        continue;
+      }
+
       postUntypedMessage(worker, message.message, message.params);
     }
 

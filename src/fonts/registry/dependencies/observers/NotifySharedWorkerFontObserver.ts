@@ -16,24 +16,16 @@ export class NotifyWorkersObserver implements FontObserver {
     isBold: boolean,
     isItalic: boolean,
   ): void {
-    this.broadcaster('fontLoaded', {
-      fontName,
-      url,
-      isBold,
-      isItalic,
-    });
-
-    // sharedWorker.port.onmessage = (event: MessageEvent<WorkerMessage>) => {
-    //   if (isMessageOfType(event, 'fontLoaded:result')) {
-    //     if (event.data.params.status === 'error') {
-    //       console.log(
-    //         `DocumentAdderFontObserver: error loading font ${fontName} from ${url}`,
-    //       );
-    //     }
-    //   }
-    // };
-    // sharedWorker.onerror = (error) => {
-    //   console.log('DocumentAdderFontObserver: error from shared worker', error);
-    // };
+    this.broadcaster(
+      'fontLoaded',
+      {
+        fontName,
+        url,
+        isBold,
+        isItalic,
+      },
+      true,
+      true,
+    );
   }
 }

@@ -9,7 +9,6 @@ export function getTextMeasurer(type: TextMeasurerType): TextMeasurerInterface {
     case 'canvas': {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d')!;
-      console.log(canvas.width, canvas.height);
       return new CanvasTextMeasurer().withCanvasContext(context);
     }
     case 'offscreen-canvas': {
