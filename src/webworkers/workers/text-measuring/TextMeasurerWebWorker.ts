@@ -6,7 +6,7 @@ import { WorkerAdderFontObserver } from '../../../fonts/registry/dependencies/ob
 import { FontRegistry } from '../../../fonts/registry/FontRegistry';
 import { CanvasTextMeasurer } from '../../../text-measuring/measurers/CanvasTextMeasurer';
 import { Message } from '../../messages';
-import { logObjectKeys, postTypedMessage } from '../../utils';
+import { logObjectKeys } from '../../utils';
 import { handleMessageFromWorker } from '../worker-utils';
 
 let workerId: string | null = null;
