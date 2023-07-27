@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { isDefined } from '../../core/utils/assertions';
+import { Services } from '../../Services';
 import {
   isCanvasDetached,
   isMessageOfType,
@@ -21,11 +22,13 @@ export class WebWorkerTextMeasurer
 {
   private canvasFactory: (() => OffscreenCanvas) | null;
   private workerService: WorkersService | null;
+  private canvasTransferMode: string | null;
 
   constructor() {
     super();
     this.canvasFactory = null;
     this.workerService = null;
+    this.canvasTransferMode = null;
   }
 
   withCanvasFactory(canvasFactory: () => OffscreenCanvas) {
@@ -38,8 +41,18 @@ export class WebWorkerTextMeasurer
     return this;
   }
 
+  applyParams?(params?: Record<string, unknown>): void {
+    if (!params) {
+      return;
+    }
+
+    if ('canvasTransferMode' in params) {
+      this.canvasTransferMode = params.canvasTransferMode as string;
+    }
+  }
+
   // This method must be called last, to return the calculated width of the text.
-  calculateWidth() {
+  async calculateWidth() {
     isDefined(this.canvasFactory, 'CanvasFactory is not set');
     isDefined(this.workerService, 'WorkerService is not set');
 
@@ -51,12 +64,21 @@ export class WebWorkerTextMeasurer
 
     const worker = this.workerService.getWorker();
 
+    await this.waitForFontSynchronization(worker);
+
+    return await this.waitForTextMeasurement(worker, canvas);
+  }
+
+  private async waitForTextMeasurement(
+    worker: Worker,
+    canvas: OffscreenCanvas,
+  ) {
     return new Promise<number>((resolve, reject) => {
       isDefined(canvas, 'Canvas is not defined');
 
       worker.onmessage = (event: MessageEvent<WorkerMessage>) => {
         if (isMessageOfType(event, 'measureText:result')) {
-          resolve(event.data.params.result as number);
+          resolve(event.data.params.result);
           return;
         }
       };
@@ -65,20 +87,59 @@ export class WebWorkerTextMeasurer
         reject(error);
       };
 
-      postTypedMessage(
-        worker,
-        'measureText',
-        {
+      if (this.canvasTransferMode === 'transferred') {
+        postTypedMessage(
+          worker,
+          'measureText',
+          {
+            text: this.text,
+            font: this.font,
+            size: this.size,
+            bold: this.bold,
+            italic: this.italic,
+            canvas: canvas,
+            canvasMode: 'transferred',
+          },
+          [canvas],
+        );
+      } else {
+        postTypedMessage(worker, 'measureText', {
           text: this.text,
           font: this.font,
           size: this.size,
           bold: this.bold,
           italic: this.italic,
-          canvas: canvas,
-          canvasMode: 'transferred',
-        },
-        [canvas],
-      );
+          canvasMode: 'created',
+        });
+      }
+    });
+  }
+
+  private async waitForFontSynchronization(worker: Worker) {
+    isDefined(this.workerService, 'WorkerService is not set');
+
+    const fonts = await Services.FontRegistry.getFontsData();
+
+    return new Promise<void>((resolve, reject) => {
+      worker.onmessage = (event: MessageEvent<WorkerMessage>) => {
+        if (isMessageOfType(event, 'fonts:synchronize:result')) {
+          resolve();
+          return;
+        }
+      };
+
+      worker.onerror = (error) => {
+        reject(error);
+      };
+
+      postTypedMessage(worker, 'fonts:synchronize', {
+        fonts: fonts.map((font) => ({
+          fontName: font.font,
+          url: font.url,
+          isBold: font.isBold,
+          isItalic: font.isItalic,
+        })),
+      });
     });
   }
 }

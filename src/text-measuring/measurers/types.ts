@@ -4,6 +4,7 @@ export interface TextMeasurerInterface {
   withSize(size: number): TextMeasurerInterface;
   withBold(bold?: boolean): TextMeasurerInterface;
   withItalic(italic?: boolean): TextMeasurerInterface;
+  withParams(params?: Record<string, unknown>): TextMeasurerInterface;
   calculateWidth(): number | Promise<number>;
 }
 

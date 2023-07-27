@@ -19,6 +19,7 @@ import { DEFAULT_FONT_SIZE } from '../../fonts/constants';
 import { useFontRegistry } from '../../fonts/hooks';
 import { RegisteredFontData } from '../../fonts/types';
 import { buildCssStringForFont } from '../../fonts/utils';
+import { Services } from '../../Services';
 import { useTextMeasurer } from '../hooks';
 import { TextMeasurerType } from '../measurers/types';
 
@@ -28,6 +29,7 @@ export type TextMeasurerPageProps = {
   initialText: string;
   measurerType: TextMeasurerType;
   selectedFontId?: string;
+  measurerParams?: Record<string, unknown>;
   customFontsEnabled?: boolean;
   customFontUrl?: string;
   customFontIsBold?: boolean;
@@ -35,16 +37,11 @@ export type TextMeasurerPageProps = {
   initialFontSize?: number;
 };
 
-export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
-  initialText,
-  measurerType,
-  selectedFontId,
-  customFontsEnabled,
-  customFontUrl,
-  customFontIsBold,
-  customFontIsItalic,
-  initialFontSize,
-}) => {
+function useTextMeasurerPageState(
+  initialText: string,
+  selectedFontId?: string,
+  initialFontSize?: number,
+) {
   const [text, setText] = useState<string>(initialText);
   const [currentFontId, setCurrentFontId] = useState<string>(
     selectedFontId ?? '',
@@ -61,9 +58,55 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
 
   const [servicesAreReady, setServicesAreReady] = useState<boolean>(false);
 
-  const textMeasurer = useTextMeasurer(measurerType);
+  return {
+    text,
+    currentFontId,
+    fontSize,
+    measurementResult,
+    isMeasuring,
+    isCustomFontLoading,
+    servicesAreReady,
+    setText,
+    setCurrentFontId,
+    setFontSize,
+    setMeasurementResult,
+    setIsMeasuring,
+    setIsCustomFontLoading,
+    setServicesAreReady,
+  };
+}
+
+export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
+  initialText,
+  measurerType,
+  selectedFontId,
+  customFontsEnabled,
+  customFontUrl,
+  customFontIsBold,
+  customFontIsItalic,
+  initialFontSize,
+  measurerParams,
+}) => {
+  const {
+    text,
+    currentFontId,
+    fontSize,
+    measurementResult,
+    isMeasuring,
+    isCustomFontLoading,
+    servicesAreReady,
+    setText,
+    setCurrentFontId,
+    setFontSize,
+    setMeasurementResult,
+    setIsMeasuring,
+    setIsCustomFontLoading,
+    setServicesAreReady,
+  } = useTextMeasurerPageState(initialText, selectedFontId, initialFontSize);
+
+  const textMeasurer = useTextMeasurer(measurerType, measurerParams);
   const { selectedFontData, fonts, registerFont, isInitialized } =
-    useFontRegistry(currentFontId);
+    useFontRegistry(Services.FontRegistry, currentFontId);
 
   const { info, success, warning } = useShowNotifications();
 
@@ -77,7 +120,22 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
         }
       });
     }
-  }, [isInitialized, servicesAreReady, fonts, currentFontId]);
+  }, [
+    isInitialized,
+    servicesAreReady,
+    fonts,
+    currentFontId,
+    setCurrentFontId,
+    setServicesAreReady,
+  ]);
+
+  // const warmUpCallback = useCallback(() => {
+  //   return delay(4000).then(() => {
+  //     Services.TextMeasurerWorkersService.getWorker();
+  //   });
+  // }, []);
+
+  // useExecuteExactlyOnce(warmUpCallback);
 
   const isCustomFontEnabled = customFontsEnabled === true;
 
@@ -111,6 +169,7 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
       selectedFontData.font,
       selectedFontData.isBold,
       selectedFontData.isItalic,
+      fontSize,
     );
 
   const handleMeasureClicked = useCallback(
@@ -139,7 +198,14 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
 
       setIsMeasuring(false);
     },
-    [selectedFontData, textMeasurer, info, fontSize],
+    [
+      selectedFontData,
+      textMeasurer,
+      info,
+      fontSize,
+      setIsMeasuring,
+      setMeasurementResult,
+    ],
   );
 
   const handleRegisterCustomFontClicked = useCallback(
@@ -173,7 +239,7 @@ export const TextMeasurerPage: React.FC<TextMeasurerPageProps> = ({
         setIsCustomFontLoading(false);
       }
     },
-    [registerFont, success, warning],
+    [registerFont, success, warning, setIsCustomFontLoading],
   );
 
   const handleFontChanged = useCallback(

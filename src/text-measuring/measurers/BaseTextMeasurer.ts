@@ -40,6 +40,13 @@ export abstract class BaseTextMeasurer implements TextMeasurerInterface {
     return this;
   }
 
+  withParams(params?: Record<string, unknown>) {
+    this.applyParams?.(params);
+    return this;
+  }
+
+  abstract applyParams?(params?: Record<string, unknown>): void;
+
   // This method must be called last, to return the calculated width of the text.
   abstract calculateWidth(): number | Promise<number>;
 }

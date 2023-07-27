@@ -179,5 +179,8 @@ export const CustomFontPanel: Story = {
     customFontUrl: 'https://fonts.cdnfonts.com/s/15017/Bangers-Regular.woff',
     customFontIsItalic: false,
     customFontIsBold: false,
+    measurerParams: {
+      canvasTransferMode: 'created',
+    },
   },
 };

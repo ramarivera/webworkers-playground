@@ -26,6 +26,9 @@ export class CanvasTextMeasurer
     return this;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  applyParams?(params?: Record<string, unknown>): void {}
+
   // This method must be called last, to return the calculated width of the text.
   calculateWidth() {
     const fontString = buildCssStringForFont(
