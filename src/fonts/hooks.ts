@@ -1,31 +1,20 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useExecuteExactlyOnce } from '../core/utils/hooks';
-import { textMeasurerWorkersService } from '../webworkers/workers/text-measuring/TextMeasurerWorkerService';
 
 import { PREDEFINED_FONTS } from './predefinedFonts';
-import { FontFaceObserverFontAwaiter } from './registry/dependencies/awaiters/FontFaceObserverFontAwaiter';
-import { DocumentAdderFontObserver } from './registry/dependencies/observers/DocumentAdderFontObserver';
-import { NotifyWorkersObserver } from './registry/dependencies/observers/NotifySharedWorkerFontObserver';
 import { FontRegistry } from './registry/FontRegistry';
 import { FontRegistrationData, RegisteredFontData } from './types';
 import { convertPredefinedFontToFontRegistrationData } from './utils';
 
-export function useFontRegistry(selectedFontId: string) {
+export function useFontRegistry(
+  fontRegistryInstance: FontRegistry,
+  selectedFontId: string,
+) {
   const fontRegistryRef = useRef<FontRegistry | null>(null);
 
   if (!fontRegistryRef.current) {
-    fontRegistryRef.current = new FontRegistry({
-      fontAwaiter: new FontFaceObserverFontAwaiter(),
-      observers: [
-        new DocumentAdderFontObserver(),
-        new NotifyWorkersObserver(
-          textMeasurerWorkersService.broadcastMessage.bind(
-            textMeasurerWorkersService,
-          ),
-        ),
-      ],
-    });
+    fontRegistryRef.current = fontRegistryInstance;
   }
 
   const fontRegistry = fontRegistryRef.current;

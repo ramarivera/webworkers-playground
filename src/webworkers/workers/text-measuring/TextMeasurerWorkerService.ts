@@ -1,7 +1,7 @@
 import { postTypedMessage, postUntypedMessage } from '../../utils';
 import { WorkersService } from '../../WorkersService';
 
-class TextMeasurerWorkersService extends WorkersService {
+export class TextMeasurerWorkersService extends WorkersService {
   protected createWorker(): Worker {
     const workerId = this.getNewId();
 
@@ -21,7 +21,3 @@ class TextMeasurerWorkersService extends WorkersService {
     return worker;
   }
 }
-
-export const textMeasurerWorkersService = new TextMeasurerWorkersService(
-  10,
-) as WorkersService;

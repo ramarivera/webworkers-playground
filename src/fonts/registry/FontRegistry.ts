@@ -48,27 +48,11 @@ export class FontRegistry {
   }
 
   public async getFontsData(): Promise<RegisteredFontData[]> {
-    const fontStatusPromises = Array.from(this.fonts.values()).map(
-      async (fontData: RegisteredFontData) => {
-        const font = await this.configuration.fontAwaiter.waitForFontToLoad(
-          fontData.font,
-          fontData.url,
-          fontData.isBold,
-          fontData.isItalic,
-        );
-
-        return {
-          ...fontData,
-          status: font ? 'loaded' : 'error',
-        };
-      },
+    const fonts = Array.from(this.fonts.values()).sort((a, b) =>
+      a.displayName.localeCompare(b.displayName),
     );
 
-    const promiseResults = (await Promise.all(fontStatusPromises)).sort(
-      (a, b) => a.displayName.localeCompare(b.displayName),
-    );
-
-    return promiseResults;
+    return fonts;
   }
 
   public async tryGetFromCacheOrLoadFont(

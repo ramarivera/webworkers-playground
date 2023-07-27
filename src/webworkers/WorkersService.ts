@@ -21,8 +21,11 @@ export abstract class WorkersService {
   public broadcastMessage<TMessage extends AllMessages>(
     message: TMessage,
     params: MessagePayloads[TMessage]['params'],
+    saveMessage: boolean = false,
   ) {
-    this.savedMessages.push({ message, params });
+    if (saveMessage) {
+      this.savedMessages.push({ message, params });
+    }
 
     for (const worker of this.workers) {
       postTypedMessage(worker, message, params);
